@@ -1,0 +1,31 @@
+TO DO LIST:
+
+Dominic:
+make playable character
+make ai
+make the game work
+make menus
+implement sound
+implement graphics
+implement music
+polish
+
+Stephen:
+sound effects:
+player chose action
+enemy perform action
+hit
+death
+victory
+
+think about how the AI will work
+
+Conor:
+design menus, UI, etc.
+
+Megan:
+design characters
+art/animations
+
+Adam:
+music

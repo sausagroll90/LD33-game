@@ -1,14 +1,18 @@
 import pygame
 import random
+import src.spritesheet_loader
 
 class Enemy:
 	def __init__(self):
+		self.sprites = src.spritesheet_loader.load_spritesheet(pygame.image.load("res/placeholder2.png"), 300, 4, 1)
+		self.img = {"neutral" : self.sprites[0], "attack" : self.sprites[1], "block" : self.sprites[2], "magic" : self.sprites[3]}
+		self.c_img = self.img["neutral"]
 		self.action = False
 		self.statestack = []
 		self.countdown = 120
-		self.colour = (0, 0, 0)
+		self.health = 100
 
-	def cooldown_state(self):
+	def cooldown_state(self, gameloop):
 		self.countdown -= 1
 		if self.countdown == 0:
 			self.statestack.pop()
@@ -16,18 +20,19 @@ class Enemy:
 
 	def attack(self):
 		self.action = "attack"
-		self.colour = (255, 0, 0)
+		self.c_img = self.img["attack"]
 		self.countdown = 60
 		self.statestack.append(self.cooldown_state)
 
 	def magic(self):
 		self.action = "magic"
-		self.colour = (0, 255, 0)
+		self.c_img = self.img["magic"]
 		self.countdown = 60
 		self.statestack.append(self.cooldown_state)
 
-	def blocking_state(self):
-		self.colour = (0, 0, 255)
+	def blocking_state(self, gameloop):
+		self.action = "block"
+		self.c_img = self.img["block"]
 		self.countdown -= 1
 		if self.countdown == 0:
 			random.seed()
@@ -36,11 +41,12 @@ class Enemy:
 				self.attack()
 			elif choice == 2:
 				self.magic()
+			gameloop.enemy_attack()
 
-	def update(self):
+	def update(self, gameloop):
 		if not self.statestack:
 			self.statestack.append(self.blocking_state)
-		self.statestack[-1]()
+		self.statestack[-1](gameloop)
 
 	def draw(self, screen):
-		pygame.draw.rect(screen, self.colour, (330, 250, 70, 100))
+		screen.blit(self.c_img, (100, 150))

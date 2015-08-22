@@ -9,5 +9,10 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("LD33")
 clock = pygame.time.Clock()
 
-player = src.player.Player()
-enemy = src.enemy.Enemy()
+lvlimgs = [
+	pygame.image.load("res/level1.png"),
+	pygame.image.load("res/level2.png"),
+	pygame.image.load("res/level3.png"),
+	pygame.image.load("res/level4.png"),
+	pygame.image.load("res/level5.png")
+]

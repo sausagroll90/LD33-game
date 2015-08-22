@@ -3,31 +3,33 @@ import random
 import src.spritesheet_loader
 
 class Enemy:
-	def __init__(self):
+	def __init__(self, health, countdown, cooldown):
 		self.sprites = src.spritesheet_loader.load_spritesheet(pygame.image.load("res/placeholder2.png"), 300, 4, 1)
 		self.img = {"neutral" : self.sprites[0], "attack" : self.sprites[1], "block" : self.sprites[2], "magic" : self.sprites[3]}
 		self.c_img = self.img["neutral"]
 		self.action = False
 		self.statestack = []
-		self.countdown = 120
-		self.health = 100
+		self.countdowntime = countdown
+		self.countdown = self.countdowntime
+		self.health = health
+		self.cooldown = cooldown
 
 	def cooldown_state(self, gameloop):
 		self.countdown -= 1
 		if self.countdown == 0:
 			self.statestack.pop()
-			self.countdown = 120
+			self.countdown = self.countdowntime
 
 	def attack(self):
 		self.action = "attack"
 		self.c_img = self.img["attack"]
-		self.countdown = 60
+		self.countdown = self.cooldown
 		self.statestack.append(self.cooldown_state)
 
 	def magic(self):
 		self.action = "magic"
 		self.c_img = self.img["magic"]
-		self.countdown = 60
+		self.countdown = self.cooldown
 		self.statestack.append(self.cooldown_state)
 
 	def blocking_state(self, gameloop):

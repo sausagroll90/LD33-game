@@ -2,6 +2,8 @@ import pygame
 import src.player
 import src.enemy
 
+pygame.mixer.pre_init(22050, -16, 2, 512)
+
 pygame.init()
 
 size = (1000, 600)
@@ -18,6 +20,11 @@ lvlimgs = [
 	pygame.image.load("res/level5.png")
 ]
 
+winscreen = pygame.image.load("res/win.png")
+losescreen = pygame.image.load("res/lose.png")
 menuimg = pygame.image.load("res/menu.png")
 menuselectimg = pygame.image.load("res/menupicker.png").convert()
 menuselectimg.set_colorkey((0, 255, 0))
+
+theme = pygame.mixer.music.load("res/theme.mp3")
+pygame.mixer.music.set_volume(0.3)

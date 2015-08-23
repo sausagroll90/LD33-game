@@ -13,13 +13,23 @@ class Gameloop:
 		self.font = pygame.font.Font("res/FreeSansBold.ttf", 30)
 		self.c_level = 0
 		self.player = src.player.Player()
-		self.enemy = src.enemy.Enemy(100, 1000000, 60)
+		self.enemy = src.enemy.Enemy(50, 1000000, 60)
 		self.pause_countdown = 180
 		self.c_menubutton = 1
+		self.sound = {
+			"hit" : pygame.mixer.Sound("res/hit.wav"),
+			"block" : pygame.mixer.Sound("res/block.wav"),
+			"mcharge" : pygame.mixer.Sound("res/mcharge.wav"),
+			"magic" : pygame.mixer.Sound("res/mshot.wav"),
+			"parry" : pygame.mixer.Sound("res/mparry.wav")
+		}
 
 	def handle_keypress(self, key):
 		if key == pygame.K_UP or key == pygame.K_LEFT or key == pygame.K_RIGHT:
 			self.player.handle_keypress(key, self)
+		if key == pygame.K_ESCAPE:
+			self.statestack.pop()
+			self.c_level = 1
 
 	def handle_events(self):
 		for event in pygame.event.get():
@@ -32,30 +42,46 @@ class Gameloop:
 		self.countdown = self.enemy.cooldown
 
 	def player_attack(self):
+		self.sound["hit"].play()
 		self.enemy.health -= 10
 
 	def combat_handler(self):
 		if self.enemy.action == "attack":
 			if not self.player.action == "block":
+				self.sound["hit"].play()
 				self.player.health -= 10
+			else:
+				self.sound["block"].play()
 		if self.enemy.action == "magic":
 			if self.player.action == "parry":
 				self.enemy.health -= 20
+				self.sound["parry"].play()
 			else:
 				self.player.health -= 20
+				self.sound["magic"].play()
 
 	def lose_state(self):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.done = True
-		screen.fill((255, 0, 0))
+			elif event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					self.statestack.pop()
+					self.statestack.pop()
+					self.c_level = 1
+		self.screen.blit(losescreen, (0, 0))
 		pygame.display.flip()
 
 	def win_state(self):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.done = True
-		screen.fill((0, 255, 0))
+			elif event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					self.statestack.pop()
+					self.statestack.pop()
+					self.c_level = 1
+		self.screen.blit(winscreen, (0, 0))
 		pygame.display.flip()
 
 	def pause_state(self):
@@ -70,7 +96,11 @@ class Gameloop:
 		pygame.display.flip()
 
 	def next_level(self):
-		if self.c_level == 1:
+		if self.c_level == 0:
+			self.enemy = src.enemy.Enemy(50, 23123124, 60)
+			self.pause_countdown = 180
+			self.statestack.append(self.pause_state)
+		elif self.c_level == 1:
 			self.enemy = src.enemy.Enemy(100, 120, 60)
 			self.pause_countdown = 180
 			self.statestack.append(self.pause_state)
@@ -135,7 +165,8 @@ class Gameloop:
 	def menu_enter(self):
 		if self.c_menubutton == 1:
 			self.statestack.append(self.game_state)
-			self.statestack.append(self.pause_state)
+			self.next_level()
+			self.player.health = 100
 		elif self.c_menubutton == 2:
 			self.done = True
 
@@ -169,6 +200,7 @@ class Gameloop:
 		self.menu_draw()
 
 	def main_loop(self):
+		pygame.mixer.music.play(-1)
 		while not self.done:
 			if not self.statestack:
 				self.statestack.append(self.menu_state)

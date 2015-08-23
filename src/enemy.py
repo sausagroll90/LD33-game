@@ -13,6 +13,7 @@ class Enemy:
 		self.countdown = self.countdowntime
 		self.health = health
 		self.cooldown = cooldown
+		self.magicsound = pygame.mixer.Sound("res/mcharge.wav")
 
 	def cooldown_state(self, gameloop):
 		self.countdown -= 1
@@ -31,6 +32,7 @@ class Enemy:
 		self.c_img = self.img["magic"]
 		self.countdown = self.cooldown
 		self.statestack.append(self.cooldown_state)
+		self.magicsound.play()
 
 	def blocking_state(self, gameloop):
 		self.action = "block"

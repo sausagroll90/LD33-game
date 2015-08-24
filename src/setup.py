@@ -23,6 +23,7 @@ lvlimgs = [
 winscreen = pygame.image.load("res/win.png")
 losescreen = pygame.image.load("res/lose.png")
 menuimg = pygame.image.load("res/menu.png")
+background = pygame.image.load("res/background.png")
 menuselectimg = pygame.image.load("res/menupicker.png").convert()
 menuselectimg.set_colorkey((0, 255, 0))
 

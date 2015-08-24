@@ -10,7 +10,6 @@ class Gameloop:
 		self.clock = clock
 		self.countdown = 0
 		self.statestack = []
-		self.font = pygame.font.Font("res/FreeSansBold.ttf", 30)
 		self.c_level = 0
 		self.player = src.player.Player()
 		self.enemy = src.enemy.Enemy(50, 1000000, 60)
@@ -136,15 +135,13 @@ class Gameloop:
 				self.next_level()
 			else:
 				self.statestack.append(self.win_state)
-		self.playertext = self.font.render("health: " + str(self.player.health), False, (0, 0, 0))
-		self.enemytext = self.font.render("health: " + str(self.enemy.health), False, (0, 0, 0))
 
 	def draw_to_screen(self):
-		self.screen.fill((255, 255, 255))
+		self.screen.blit(background, (0, 0))
 		self.player.draw(self.screen)
 		self.enemy.draw(self.screen)
-		self.screen.blit(self.enemytext, (100, 100))
-		self.screen.blit(self.playertext, (600, 100))
+		pygame.draw.rect(self.screen, (200, 0, 0), (178, 518, (self.enemy.health / float((self.c_level + 1) * 50)) * 270, 30))
+		pygame.draw.rect(self.screen, (200, 0, 0), (552, 518, (self.player.health / 100.0) * 270, 30))
 		pygame.display.flip()
 
 	def game_state(self):
@@ -204,5 +201,6 @@ class Gameloop:
 		while not self.done:
 			if not self.statestack:
 				self.statestack.append(self.menu_state)
+				self.statestack.append(self.game_state)
 			self.statestack[-1]()
 			self.clock.tick(60)

@@ -3,7 +3,9 @@ import src.spritesheet_loader
 
 class Player:
 	def __init__(self):
-		self.sprites = src.spritesheet_loader.load_spritesheet(pygame.image.load("res/placeholder.png"), 300, 4, 1)
+		self.sprites = src.spritesheet_loader.load_spritesheet(pygame.image.load("res/placeholder.png").convert(), 300, 4, 1)
+		for img in self.sprites:
+			img.set_colorkey((255, 255, 255))
 		self.img = {"neutral" : self.sprites[0], "attack" : self.sprites[1], "block" : self.sprites[2], "parry" : self.sprites[3]}
 		self.c_img = self.img["neutral"]
 		self.action = False

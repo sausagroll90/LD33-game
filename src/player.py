@@ -13,10 +13,12 @@ class Player:
 		self.countdown = 0
 		self.health = 100
 
-	def cooldown_state(self):
+	def cooldown_state(self, gameloop):
 		self.countdown -= 1
 		if self.countdown == 0:
+			gameloop.drects.append(pygame.Rect(600, 150, 300, 300))
 			self.statestack.pop()
+			self.c_img = self.img["neutral"]
 
 	def lkey(self, gameloop):
 		self.action = "attack"
@@ -46,14 +48,14 @@ class Player:
 			elif key == pygame.K_UP:
 				self.ukey()
 
-	def ready_state(self):
+	def ready_state(self, gameloop):
 		self.c_img = self.img["neutral"]
 		self.action = "neutral"
 
-	def update(self):
+	def update(self, gameloop):
 		if not self.statestack:
 			self.statestack.append(self.ready_state)
-		self.statestack[-1]()
+		self.statestack[-1](gameloop)
 
 	def draw(self, screen):
 		screen.blit(self.c_img, (600, 150))

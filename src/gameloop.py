@@ -22,13 +22,17 @@ class Gameloop:
 			"magic" : pygame.mixer.Sound("res/mshot.wav"),
 			"parry" : pygame.mixer.Sound("res/mparry.wav")
 		}
+		self.drects = []
+		self.need_to_update = True
 
 	def handle_keypress(self, key):
 		if key == pygame.K_UP or key == pygame.K_LEFT or key == pygame.K_RIGHT:
 			self.player.handle_keypress(key, self)
+			self.drects.append(pygame.Rect(600, 150, 300, 300))
 		if key == pygame.K_ESCAPE:
 			self.statestack.pop()
 			self.c_level = 1
+			self.need_to_update = True
 
 	def handle_events(self):
 		for event in pygame.event.get():
@@ -43,12 +47,15 @@ class Gameloop:
 	def player_attack(self):
 		self.sound["hit"].play()
 		self.enemy.health -= 10
+		self.drects.append(pygame.Rect(178, 518, 270, 30))
+		self.drects.append(pygame.Rect(600, 150, 300, 300))
 
 	def combat_handler(self):
 		if self.enemy.action == "attack":
 			if not self.player.action == "block":
 				self.sound["hit"].play()
 				self.player.health -= 10
+				self.drects.append(pygame.Rect(552, 518, 270, 30))
 			else:
 				self.sound["block"].play()
 		if self.enemy.action == "magic":
@@ -68,6 +75,7 @@ class Gameloop:
 					self.statestack.pop()
 					self.statestack.pop()
 					self.c_level = 1
+					self.need_to_update = True
 		self.screen.blit(losescreen, (0, 0))
 		pygame.display.flip()
 
@@ -80,6 +88,7 @@ class Gameloop:
 					self.statestack.pop()
 					self.statestack.pop()
 					self.c_level = 1
+					self.need_to_update = True
 		self.screen.blit(winscreen, (0, 0))
 		pygame.display.flip()
 
@@ -87,41 +96,52 @@ class Gameloop:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.done = True
+		if self.need_to_update or self.updatenf:
+			self.screen.blit(lvlimgs[self.c_level], (0, 0))
+			pygame.display.flip()
+			print("updated")
+			self.need_to_update = False
+			self.updatenf = False
 		if self.pause_countdown == 0:
+			self.need_to_update = True
 			self.statestack.pop()
 		else:
 			self.pause_countdown -= 1
-		self.screen.blit(lvlimgs[self.c_level], (0, 0))
-		pygame.display.flip()
 
 	def next_level(self):
 		if self.c_level == 0:
 			self.enemy = src.enemy.Enemy(50, 23123124, 60)
 			self.pause_countdown = 180
 			self.statestack.append(self.pause_state)
+			self.updatenf = True
 		elif self.c_level == 1:
 			self.enemy = src.enemy.Enemy(100, 120, 60)
 			self.pause_countdown = 180
 			self.statestack.append(self.pause_state)
+			self.updatenf = True
 		elif self.c_level == 2:
 			self.enemy = src.enemy.Enemy(150, 110, 50)
 			self.pause_countdown = 180
 			self.statestack.append(self.pause_state)
+			self.updatenf = True
 		elif self.c_level == 3:
 			self.enemy = src.enemy.Enemy(200, 100, 40)
 			self.pause_countdown = 180
 			self.statestack.append(self.pause_state)
+			self.updatenf = True
 		elif self.c_level == 4:
 			self.enemy = src.enemy.Enemy(250, 80, 30)
 			self.pause_countdown = 180
 			self.statestack.append(self.pause_state)
+			self.updatenf = True
 		elif self.c_level == 5:
 			self.enemy = src.enemy.Enemy(300, 60, 30)
 			self.pause_countdown = 180
 			self.statestack.append(self.pause_state)
+			self.updatenf = True
 
 	def game_updates(self):
-		self.player.update()
+		self.player.update(self)
 		self.enemy.update(self)
 		if self.countdown > -1:
 			self.countdown -= 1
@@ -142,7 +162,10 @@ class Gameloop:
 		self.enemy.draw(self.screen)
 		pygame.draw.rect(self.screen, (200, 0, 0), (178, 518, (self.enemy.health / float((self.c_level + 1) * 50)) * 270, 30))
 		pygame.draw.rect(self.screen, (200, 0, 0), (552, 518, (self.player.health / 100.0) * 270, 30))
-		pygame.display.flip()
+		if self.need_to_update:
+			pygame.display.flip()
+			self.need_to_update = False
+		pygame.display.update(self.drects)
 
 	def game_state(self):
 		self.handle_events()
@@ -164,6 +187,7 @@ class Gameloop:
 			self.statestack.append(self.game_state)
 			self.next_level()
 			self.player.health = 100
+			self.updatenf = True
 		elif self.c_menubutton == 2:
 			self.done = True
 
@@ -190,17 +214,23 @@ class Gameloop:
 			self.screen.blit(menuselectimg, (300, 232))
 		elif self.c_menubutton == 2:
 			self.screen.blit(menuselectimg, (300, 375))
-		pygame.display.flip()
+		if self.need_to_update:
+			pygame.display.flip()
+		else:
+			pygame.display.update(pygame.Rect(250, 200, 350, 400))
 
 	def menu_state(self):
+		self.updatenf = False
 		self.menu_events()
 		self.menu_draw()
+		if self.updatenf == True:
+			self.need_to_update = True
 
 	def main_loop(self):
 		pygame.mixer.music.play(-1)
 		while not self.done:
 			if not self.statestack:
 				self.statestack.append(self.menu_state)
-				self.statestack.append(self.game_state)
+			self.drects = []
 			self.statestack[-1]()
 			self.clock.tick(60)

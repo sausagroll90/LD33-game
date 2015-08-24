@@ -16,12 +16,17 @@ class Enemy:
 		self.health = health
 		self.cooldown = cooldown
 		self.magicsound = pygame.mixer.Sound("res/mcharge.wav")
+		self.countup = 0
 
 	def cooldown_state(self, gameloop):
+		self.countup = 0
 		self.countdown -= 1
 		if self.countdown == 0:
 			self.statestack.pop()
 			self.countdown = self.countdowntime
+			#self.c_img = self.img["neutral"]
+			#gameloop.drects.append(pygame.Rect(100, 150, 300, 300))
+			gameloop.drects.append(pygame.Rect(552, 518, 270, 30))
 
 	def attack(self):
 		self.action = "attack"
@@ -37,10 +42,14 @@ class Enemy:
 		self.magicsound.play()
 
 	def blocking_state(self, gameloop):
-		self.action = "block"
-		self.c_img = self.img["block"]
+		self.countup += 1
+		if self.countup > 20:
+			self.action = "block"
+			self.c_img = self.img["neutral"]
+			gameloop.drects.append(pygame.Rect(100, 150, 300, 300))
 		self.countdown -= 1
 		if self.countdown == 0:
+			gameloop.drects.append(pygame.Rect(100, 150, 300, 300))
 			random.seed()
 			choice = random.randint(1, 2)
 			if choice == 1:

@@ -1,14 +1,10 @@
 import pygame
 import random
-import src.spritesheet_loader
 
 class Enemy:
 	def __init__(self, health, countdown, cooldown):
-		self.sprites = src.spritesheet_loader.load_spritesheet(pygame.image.load("res/placeholder2.png").convert(), 300, 4, 1)
-		for img in self.sprites:
-			img.set_colorkey((255, 255, 255))
 		self.img = {
-			"attack" : self.sprites[1],
+			"attack" : pygame.image.load("res/anim/hero  - attack.png").convert_alpha(),
 			"block" : pygame.image.load("res/anim/hero - block.png").convert_alpha(),
 			"neutral" : pygame.image.load("res/anim/hero - neutral.png").convert_alpha(),
 			"magic" : pygame.image.load("res/anim/hero - charging magic.png").convert_alpha(),
@@ -31,12 +27,15 @@ class Enemy:
 			self.statestack.pop()
 			self.countdown = self.countdowntime
 			gameloop.drects.append(pygame.Rect(552, 518, 270, 30))
+			gameloop.drects.append(pygame.Rect(250, 180, 300, 300))
 			if self.action == "magic":
 				self.c_img = self.img["magicfired"]
+			elif self.action == "attack":
+				self.c_img = self.img["attack"]
 
 	def attack(self):
 		self.action = "attack"
-		self.c_img = self.img["attack"]
+		self.c_img = self.img["neutral"]
 		self.countdown = self.cooldown
 		self.statestack.append(self.cooldown_state)
 
@@ -51,7 +50,7 @@ class Enemy:
 		self.countup += 1
 		if self.countup > 20:
 			self.action = "block"
-			self.c_img = self.img["neutral"]
+			self.c_img = self.img["block"]
 			gameloop.drects.append(pygame.Rect(250, 180, 300, 300))
 		self.countdown -= 1
 		if self.countdown == 0:

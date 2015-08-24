@@ -34,6 +34,7 @@ class Gameloop:
 			self.statestack.pop()
 			self.c_level = 1
 			self.need_to_update = True
+			self.drects.append(pygame.Rect(0, 0, 1000, 600))
 
 	def handle_events(self):
 		for event in pygame.event.get():
@@ -233,10 +234,8 @@ class Gameloop:
 			self.screen.blit(menuselectimg, (300, 232))
 		elif self.c_menubutton == 2:
 			self.screen.blit(menuselectimg, (300, 375))
-		if self.need_to_update:
-			pygame.display.flip()
-		else:
-			pygame.display.update(pygame.Rect(250, 200, 350, 400))
+		pygame.display.flip()
+
 
 	def menu_state(self):
 		self.updatenf = False

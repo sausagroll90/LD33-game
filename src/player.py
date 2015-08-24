@@ -27,16 +27,16 @@ class Player:
 		self.statestack.append(self.cooldown_state)
 		gameloop.player_attack()
 
-	def ukey(self):
+	def ukey(self, gameloop):
 		self.action = "parry"
 		self.c_img = self.img["parry"]
-		self.countdown = 30
+		self.countdown = gameloop.countdown + 1
 		self.statestack.append(self.cooldown_state)
 
-	def rkey(self):
+	def rkey(self, gameloop):
 		self.action = "block"
 		self.c_img = self.img["block"]
-		self.countdown = 30
+		self.countdown = gameloop.countdown + 1
 		self.statestack.append(self.cooldown_state)
 
 	def handle_keypress(self, key, gameloop):
@@ -44,9 +44,9 @@ class Player:
 			if key == pygame.K_LEFT:
 				self.lkey(gameloop)
 			elif key == pygame.K_RIGHT:
-				self.rkey()
+				self.rkey(gameloop)
 			elif key == pygame.K_UP:
-				self.ukey()
+				self.ukey(gameloop)
 
 	def ready_state(self, gameloop):
 		self.c_img = self.img["neutral"]

@@ -20,6 +20,7 @@ lvlimgs = [
 	pygame.image.load("res/level5.png")
 ]
 
+magicball = pygame.image.load("res/anim/magic ball.png").convert_alpha()
 winscreen = pygame.image.load("res/win.png")
 losescreen = pygame.image.load("res/lose.png")
 menuimg = pygame.image.load("res/menu.png")

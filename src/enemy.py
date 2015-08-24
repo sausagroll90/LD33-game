@@ -9,9 +9,10 @@ class Enemy:
 			img.set_colorkey((255, 255, 255))
 		self.img = {
 			"attack" : self.sprites[1],
-			"block" : pygame.image.load("res/anim/hblock.jpg"),
-			"neutral" : pygame.image.load("res/anim/hneutral.jpg"),
-			"magic" : pygame.image.load("res/anim/hcharge.jpg")
+			"block" : pygame.image.load("res/anim/hero - block.png").convert_alpha(),
+			"neutral" : pygame.image.load("res/anim/hero - neutral.png").convert_alpha(),
+			"magic" : pygame.image.load("res/anim/hero - charging magic.png").convert_alpha(),
+			"magicfired" : pygame.image.load("res/anim/hero - fired magic.png").convert_alpha()
 		}
 		self.c_img = self.img["neutral"]
 		self.action = False
@@ -29,9 +30,9 @@ class Enemy:
 		if self.countdown == 0:
 			self.statestack.pop()
 			self.countdown = self.countdowntime
-			#self.c_img = self.img["neutral"]
-			#gameloop.drects.append(pygame.Rect(100, 150, 300, 300))
 			gameloop.drects.append(pygame.Rect(552, 518, 270, 30))
+			if self.action == "magic":
+				self.c_img = self.img["magicfired"]
 
 	def attack(self):
 		self.action = "attack"
@@ -51,10 +52,10 @@ class Enemy:
 		if self.countup > 20:
 			self.action = "block"
 			self.c_img = self.img["neutral"]
-			gameloop.drects.append(pygame.Rect(100, 150, 300, 300))
+			gameloop.drects.append(pygame.Rect(250, 180, 300, 300))
 		self.countdown -= 1
 		if self.countdown == 0:
-			gameloop.drects.append(pygame.Rect(100, 150, 300, 300))
+			gameloop.drects.append(pygame.Rect(250, 180, 300, 300))
 			random.seed()
 			choice = random.randint(1, 2)
 			if choice == 1:
@@ -69,4 +70,4 @@ class Enemy:
 		self.statestack[-1](gameloop)
 
 	def draw(self, screen):
-		screen.blit(self.c_img, (100, 150))
+		screen.blit(self.c_img, (250, 180))

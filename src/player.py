@@ -1,12 +1,13 @@
 import pygame
-import src.spritesheet_loader
 
 class Player:
 	def __init__(self):
-		self.sprites = src.spritesheet_loader.load_spritesheet(pygame.image.load("res/placeholder.png").convert(), 300, 4, 1)
-		for img in self.sprites:
-			img.set_colorkey((255, 255, 255))
-		self.img = {"neutral" : self.sprites[0], "attack" : self.sprites[1], "block" : self.sprites[2], "parry" : self.sprites[3]}
+		self.img = {
+			"neutral" : pygame.image.load("res/anim/monster - neutral.png").convert_alpha(),
+			"attack" : pygame.image.load("res/anim/monster - attack.png").convert_alpha(),
+			"block" : pygame.image.load("res/anim/monster - block.png").convert_alpha(),
+			"parry" : pygame.image.load("res/anim/monster - parry.png").convert_alpha()
+		}
 		self.c_img = self.img["neutral"]
 		self.action = False
 		self.statestack = []
@@ -15,8 +16,11 @@ class Player:
 
 	def cooldown_state(self, gameloop):
 		self.countdown -= 1
-		if self.countdown == 0:
-			gameloop.drects.append(pygame.Rect(600, 150, 300, 300))
+		if self.action == "attack" and self.countdown == 25:
+			self.c_img = self.img["block"]
+			gameloop.drects.append(pygame.Rect(500, 120, 300, 300))
+		if self.countdown <= 0:
+			gameloop.drects.append(pygame.Rect(500, 120, 300, 300))
 			self.statestack.pop()
 			self.c_img = self.img["neutral"]
 
@@ -58,4 +62,4 @@ class Player:
 		self.statestack[-1](gameloop)
 
 	def draw(self, screen):
-		screen.blit(self.c_img, (600, 150))
+		screen.blit(self.c_img, (500, 120))

@@ -24,11 +24,12 @@ class Gameloop:
 		}
 		self.drects = []
 		self.need_to_update = True
+		self.magic_hit = False
 
 	def handle_keypress(self, key):
 		if key == pygame.K_UP or key == pygame.K_LEFT or key == pygame.K_RIGHT:
 			self.player.handle_keypress(key, self)
-			self.drects.append(pygame.Rect(600, 150, 300, 300))
+			self.drects.append(pygame.Rect(500, 120, 300, 300))
 		if key == pygame.K_ESCAPE:
 			self.statestack.pop()
 			self.c_level = 1
@@ -48,7 +49,7 @@ class Gameloop:
 		self.sound["hit"].play()
 		self.enemy.health -= 10
 		self.drects.append(pygame.Rect(178, 518, 270, 30))
-		self.drects.append(pygame.Rect(600, 150, 300, 300))
+		self.drects.append(pygame.Rect(500, 120, 300, 300))
 
 	def combat_handler(self):
 		if self.enemy.action == "attack":
@@ -62,9 +63,13 @@ class Gameloop:
 			if self.player.action == "parry":
 				self.enemy.health -= 20
 				self.sound["parry"].play()
+				self.magic_hit = False
+				self.drects.append(pygame.Rect(178, 518, 270, 30))
 			else:
 				self.player.health -= 20
 				self.sound["magic"].play()
+				self.magic_hit = True
+				self.drects.append(pygame.Rect(552, 518, 270, 30))
 
 	def lose_state(self):
 		for event in pygame.event.get():
@@ -99,7 +104,6 @@ class Gameloop:
 		if self.need_to_update or self.updatenf:
 			self.screen.blit(lvlimgs[self.c_level], (0, 0))
 			pygame.display.flip()
-			print("updated")
 			self.need_to_update = False
 			self.updatenf = False
 		if self.pause_countdown == 0:
@@ -162,14 +166,19 @@ class Gameloop:
 		self.enemy.draw(self.screen)
 		if self.enemy.action == "magic":
 			if self.enemy.countup == 0:
-				pygame.draw.circle(self.screen, (70, 55, 115), (250, 300), 20)
-				self.drects.append(pygame.Rect(200, 250, 100, 100))
-			elif self.enemy.countup < 20:
-				pygame.draw.circle(self.screen, (70, 55, 115), (750, 300), 20)
-				self.drects.append(pygame.Rect(700, 250, 100, 100))
-				self.drects.append(pygame.Rect(200, 250, 100, 100))
-			elif self.enemy.countup == 20:
-				self.drects.append(pygame.Rect(700, 250, 100, 100))
+				self.screen.blit(magicball, (360, 290))
+				self.drects.append(pygame.Rect(360, 290, 60, 60))
+			elif self.enemy.countup < 10:
+				if self.magic_hit:
+					self.screen.blit(magicball, (635, 290))
+					self.drects.append(pygame.Rect(635, 290, 60, 60))
+					self.drects.append(pygame.Rect(360, 290, 60, 60))
+				else:
+					self.screen.blit(magicball, (580, 290))
+					self.drects.append(pygame.Rect(580, 290, 60, 60))
+					self.drects.append(pygame.Rect(360, 290, 60, 60))
+			elif self.enemy.countup == 10:
+				self.drects.append(pygame.Rect(550, 290, 300, 60))
 		pygame.draw.rect(self.screen, (200, 0, 0), (178, 518, (self.enemy.health / float((self.c_level + 1) * 50)) * 270, 30))
 		pygame.draw.rect(self.screen, (200, 0, 0), (552, 518, (self.player.health / 100.0) * 270, 30))
 		if self.need_to_update:

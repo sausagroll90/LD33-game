@@ -160,6 +160,16 @@ class Gameloop:
 		self.screen.blit(background, (0, 0))
 		self.player.draw(self.screen)
 		self.enemy.draw(self.screen)
+		if self.enemy.action == "magic":
+			if self.enemy.countup == 0:
+				pygame.draw.circle(self.screen, (70, 55, 115), (250, 300), 20)
+				self.drects.append(pygame.Rect(200, 250, 100, 100))
+			elif self.enemy.countup < 20:
+				pygame.draw.circle(self.screen, (70, 55, 115), (750, 300), 20)
+				self.drects.append(pygame.Rect(700, 250, 100, 100))
+				self.drects.append(pygame.Rect(200, 250, 100, 100))
+			elif self.enemy.countup == 20:
+				self.drects.append(pygame.Rect(700, 250, 100, 100))
 		pygame.draw.rect(self.screen, (200, 0, 0), (178, 518, (self.enemy.health / float((self.c_level + 1) * 50)) * 270, 30))
 		pygame.draw.rect(self.screen, (200, 0, 0), (552, 518, (self.player.health / 100.0) * 270, 30))
 		if self.need_to_update:

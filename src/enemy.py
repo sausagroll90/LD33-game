@@ -7,7 +7,12 @@ class Enemy:
 		self.sprites = src.spritesheet_loader.load_spritesheet(pygame.image.load("res/placeholder2.png").convert(), 300, 4, 1)
 		for img in self.sprites:
 			img.set_colorkey((255, 255, 255))
-		self.img = {"neutral" : self.sprites[0], "attack" : self.sprites[1], "block" : self.sprites[2], "magic" : self.sprites[3]}
+		self.img = {
+			"attack" : self.sprites[1],
+			"block" : pygame.image.load("res/anim/hblock.jpg"),
+			"neutral" : pygame.image.load("res/anim/hneutral.jpg"),
+			"magic" : pygame.image.load("res/anim/hcharge.jpg")
+		}
 		self.c_img = self.img["neutral"]
 		self.action = False
 		self.statestack = []
